@@ -9,7 +9,7 @@ Not sure about MacOS, but I don't think there should be any issues, especially i
 ## What it does, and how
 This script takes one or more playlists present in your account and makes a copy of those with items that maintain the existing ordering when sorted by recently added.
 
-It does this by first scanning the existing playlist, then adding the songs to a new playlist one by one with a 1 second delay in between. While this makes the process a bit long for huge playlists, it is the only way we can be assured that the sorting works as intended.
+It does this by first scanning the existing playlist, then adding the songs to a new playlist one by one in reverse order with a 1 second delay in between. While this makes the process a bit long for huge playlists, it is the only way we can be assured that the sorting works as intended.
 
 Currently there is no provision for saving state, so if your internet dies, or you experience a power cut, just delete the playlist copy made by the script from your account and run the script again. Since it does not modify the existing playlist, the process is deterministic. I have not tested it for idempotence (although I think Spotify allows for playlists with duplicate names, so the script should be idempotent as well).
 
