@@ -1,0 +1,8 @@
+services:
+  spotify-import-fix-recently-added:
+    build: .
+    ports:
+      - "127.0.0.1:8080:8080" # Maps the Spotify callback port
+    environment:
+      - SPOTIFY_ID=${SPOTIFY_ID}
+      - SPOTIFY_SECRET=${SPOTIFY_SECRET}
