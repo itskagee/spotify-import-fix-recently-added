@@ -6,6 +6,15 @@ This script was made and tested on Windows.
 Should be fine for Linux as well. 
 Not sure about MacOS, but I don't think there should be any issues, especially if using Docker.
 
+## What it does, and how
+This script takes one or more playlists present in your account and makes a copy of those with items that maintain the existing ordering when sorted by recently added.
+
+It does this by first scanning the existing playlist, then adding the songs to a new playlist one by one with a 1 second delay in between. While this makes the process a bit long for huge playlists, it is the only way we can be assured that the sorting works as intended.
+
+Currently there is no provision for saving state, so if your internet dies, or you experience a power cut, just delete the playlist copy made by the script from your account and run the script again. Since it does not modify the existing playlist, the process is deterministic. I have not tested it for idempotence (although I think Spotify allows for playlists with duplicate names, so the script should be idempotent as well).
+
+I have tested this with playlists up to 700 items long and it works fine.
+
 ## Prerequisites
 - Install one of the following on your system:
     - Docker (easier)
@@ -21,7 +30,7 @@ Not sure about MacOS, but I don't think there should be any issues, especially i
 ### Using Docker
 
 - Clone the repository, or download/copy the contents of `main.go`, `go.mod`, `go.sum`, `compose.yml`, and `Dockerfile` into a folder of your choice.
-- Make a new file in the folder with the name `.env`.
+- Make a new file in the folder with the name `.env`
 - Edit the file, paste the following into it, and save:
     ```
         SPOTIFY_ID=paste_your_client_id_from_earlier_here
@@ -34,6 +43,7 @@ Not sure about MacOS, but I don't think there should be any issues, especially i
 - Follow the instructions displayed. DO NOT CLOSE THE SCRIPT UNTIL IT FINISHES.
 - The docker container will automatically stop and remove itself once the script is done running.
 - Once you are done, you can delete this script and uninstall Docker if you don't need it anymore. You can also delete the app you created in the Spotify Developer Dashboard.
+- You can now delete the old playlists in your account and rename the new ones to whatever you want.
 
 ### Using Golang
 - Clone the repository, or download/copy the contents of `main.go`, `go.mod`, and `go.sum` into a folder of your choice.
@@ -53,3 +63,4 @@ Not sure about MacOS, but I don't think there should be any issues, especially i
 - Let the script run (it can take a while for stuff to download and run depending on the speed of your internet).
 - Follow the instructions displayed. DO NOT CLOSE THE SCRIPT UNTIL IT FINISHES.
 - Once you are done, you can delete the script and its folder if you don't need it anymore. You can also delete the app you created in the Spotify Developer Dashboard.
+- You can now delete the old playlists in your account and rename the new ones to whatever you want.
