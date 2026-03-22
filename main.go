@@ -12,8 +12,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/zmb3/spotify/v2"
-	spotifyauth "github.com/zmb3/spotify/v2/auth"
+	"github.com/jdcukier/spotify/v2"
+	spotifyauth "github.com/jdcukier/spotify/v2/auth"
 )
 
 var (
@@ -99,7 +99,7 @@ func main() {
 	playlists := playlistPage.Playlists
 
 	for i, p := range playlists {
-		fmt.Printf("[%d] %s (Tracks: %d)\n", i+1, p.Name, p.Tracks.Total)
+		fmt.Printf("[%d] %s (Tracks: %d)\n", i+1, p.Name, p.Items.Total)
 	}
 
 	// 4. User Selection
@@ -121,13 +121,13 @@ func main() {
 
 	for _, index := range selectedIndices {
 		originalPlaylist := playlists[index]
-		processPlaylist(ctx, client, user.ID, originalPlaylist)
+		processPlaylist(ctx, client, originalPlaylist)
 	}
 
 	fmt.Println("\nDone!")
 }
 
-func processPlaylist(ctx context.Context, client *spotify.Client, userID string, p spotify.SimplePlaylist) {
+func processPlaylist(ctx context.Context, client *spotify.Client, p spotify.SimplePlaylist) {
 	fmt.Printf("\nProcessing playlist: %s\n", p.Name)
 
 	// A. Get all tracks
@@ -144,8 +144,8 @@ func processPlaylist(ctx context.Context, client *spotify.Client, userID string,
 
 		for _, item := range trackPage.Items {
 			// Ensure it's a track and not an episode or empty
-			if item.Track.Track != nil {
-				allTracks = append(allTracks, item.Track.Track.ID)
+			if item.Item.Track != nil {
+				allTracks = append(allTracks, item.Item.Track.ID)
 			}
 		}
 
@@ -166,9 +166,8 @@ func processPlaylist(ctx context.Context, client *spotify.Client, userID string,
 
 	// C. Create new playlist
 	newName := fmt.Sprintf("%s Fixed", p.Name)
-	newPlaylist, err := client.CreatePlaylistForUser(
+	newPlaylist, err := client.CreatePlaylist(
 		ctx,
-		userID,
 		newName,
 		"Fixed copy of "+p.Name,
 		p.IsPublic,

@@ -9,7 +9,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/zmb3/spotify/v2"
+	"github.com/jdcukier/spotify/v2"
 )
 
 // --- UNIT TESTS FOR LOGIC ---
@@ -87,7 +87,7 @@ func TestProcessPlaylistFlow(t *testing.T) {
 	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		// MOCK: Get Playlist Items
-		if r.Method == "GET" && r.URL.Path == "/playlists/old-playlist/tracks" {
+		if r.Method == "GET" && r.URL.Path == "/playlists/old-playlist/items" {
 			w.WriteHeader(http.StatusOK)
 			// Return 2 tracks
 			// Using Raw JSON string to guarantee correct JSON structure.
@@ -95,7 +95,7 @@ func TestProcessPlaylistFlow(t *testing.T) {
 			fmt.Fprintln(w, `{
 							"items": [
 								{
-									"track": {
+									"item": {
 										"id": "track-A",
 										"name": "Track A",
 										"type": "track",
@@ -103,7 +103,7 @@ func TestProcessPlaylistFlow(t *testing.T) {
 									}
 								},
 								{
-									"track": {
+									"item": {
 										"id": "track-B",
 										"name": "Track B",
 										"type": "track",
@@ -120,7 +120,7 @@ func TestProcessPlaylistFlow(t *testing.T) {
 		}
 
 		// MOCK: Create Playlist
-		if r.Method == "POST" && r.URL.Path == "/users/test-user/playlists" {
+		if r.Method == "POST" && r.URL.Path == "/me/playlists" {
 			w.WriteHeader(http.StatusCreated)
 			json.NewEncoder(w).Encode(spotify.FullPlaylist{
 				SimplePlaylist: spotify.SimplePlaylist{ID: spotify.ID("new-playlist")},
@@ -130,7 +130,7 @@ func TestProcessPlaylistFlow(t *testing.T) {
 		}
 
 		// MOCK: Add Tracks
-		if r.Method == "POST" && r.URL.Path == "/playlists/new-playlist/tracks" {
+		if r.Method == "POST" && r.URL.Path == "/playlists/new-playlist/items" {
 			w.WriteHeader(http.StatusCreated)
 			// Mimic the JSON response {"snapshot_id": "..."}
 			json.NewEncoder(w).Encode(map[string]string{
@@ -152,8 +152,7 @@ func TestProcessPlaylistFlow(t *testing.T) {
 
 	// 3. Define the data to test
 	originalPlaylist := spotify.SimplePlaylist{
-		ID:   spotify.ID("old-playlist"),
-		Name: "My Jam",
+		ID: spotify.ID("old-playlist"),
 	}
 
 	ctx := context.Background()
@@ -166,8 +165,8 @@ func TestProcessPlaylistFlow(t *testing.T) {
 
 	var tracks []spotify.ID
 	for _, item := range trackPage.Items {
-		if item.Track.Track != nil {
-			tracks = append(tracks, item.Track.Track.ID)
+		if item.Item.Track != nil {
+			tracks = append(tracks, item.Item.Track.ID)
 		}
 	}
 
@@ -185,7 +184,7 @@ func TestProcessPlaylistFlow(t *testing.T) {
 	}
 
 	// C. Create Playlist
-	newPl, err := client.CreatePlaylistForUser(ctx, "test-user", "New Name", "Desc", false, false)
+	newPl, err := client.CreatePlaylist(ctx, "New Name", "Desc", false, false)
 	if err != nil {
 		t.Fatalf("Failed to create playlist: %v", err)
 	}

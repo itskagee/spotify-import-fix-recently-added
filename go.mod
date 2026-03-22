@@ -1,8 +1,8 @@
 module github.com/itskagee/spotify-import-fix-recently-added
 
-go 1.25.5
+go 1.26
 
-require github.com/zmb3/spotify/v2 v2.4.3
+require github.com/jdcukier/spotify/v2 v2.5.0
 
 require (
 	github.com/golang/protobuf v1.5.2 // indirect
