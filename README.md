@@ -42,6 +42,10 @@ Unfortunately there is no way to bypass this limit except to wait.
 - Make a new folder and copy the downloaded binary over to it.
     - This is because the script creates additional files that you might want to isolate (and delete later if not automatically done).
 - Double click on the binary to run it.
+    - If a screen pops up saying "Windows protected your PC", just ignore it and click on 'More Info' and then 'Run anyway'.
+    - This pops up because the publisher of this binary is unknown (obviously), so Microsoft gets a little too trigger happy and stops it from running.
+    - Don't worry though, there's nothing malicious in the binary. It is built automatically using Github Actions (which you can verify), so it doesn't contain any code that isn't already visible in the repo.
+    - If you're still not comfortable, use the methods labeled 'Optional / Advanced' above. They compile the code on your own computer.
 - Click Allow/Accept on any Firewall requests that pop-up. It is required for the script to connect to the internet.
 - Follow the instructions displayed. DO NOT CLOSE THE SCRIPT UNTIL IT ASKS YOU TO EXIT.
 - Once you are done, you can delete the folder you created (and everything in it) if you don't need it anymore. You can also delete the app you created in the Spotify Developer Dashboard.
