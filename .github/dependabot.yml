@@ -1,0 +1,39 @@
+version: 2
+updates:
+  - package-ecosystem: "gomod"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      golang-extensions:
+        applies-to: security-updates
+        patterns:
+          - "golang.org/x/*"
+      routine-version-updates:
+        applies-to: version-updates
+        patterns:
+          - "*"
+    assignees:
+      - "itskagee"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      action-updates:
+        applies-to: version-updates
+        patterns:
+          - "*"
+    assignees:
+      - "itskagee"
+  - package-ecosystem: "docker"
+    directory: "/docker"
+    schedule:
+      interval: "weekly"
+    groups:
+      dockerfile-updates:
+        applies-to: version-updates
+        patterns:
+          - "*"
+    assignees:
+      - "itskagee"

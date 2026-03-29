@@ -1,0 +1,120 @@
+name: Build, Test, and Release
+
+on:
+  push:
+    branches: [ "main" ]
+    tags: [ "v*" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  # ---------------------------------------------------
+  # JOB 1: Run Unit Tests (Runs on EVERY push and PR)
+  # ---------------------------------------------------
+  test:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.26'
+
+      - name: Run Tests
+        run: go test -v ./...
+
+  # ---------------------------------------------------
+  # JOB 2: Build Binaries (ONLY runs on Tag pushes)
+  # ---------------------------------------------------
+  build:
+    name: Build Binaries
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        goos: [linux, windows, darwin]
+        goarch: [amd64, arm64]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.26'
+
+      - name: Compile Binary
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+        run: |
+          mkdir -p build_output
+
+          HUMAN_READABLE_OS=${{ matrix.goos }}
+          HUMAN_READABLE_ARCH=${{ matrix.goarch }}
+          
+          if [ "$HUMAN_READABLE_OS" = "darwin" ]; then
+            HUMAN_READABLE_OS="mac"
+            if [ "$HUMAN_READABLE_ARCH" = "arm64" ]; then
+              HUMAN_READABLE_ARCH="apple-silicon"
+            elif [ "$HUMAN_READABLE_ARCH" = "amd64" ]; then
+              HUMAN_READABLE_ARCH="intel"
+            fi
+          else
+            if [ "$HUMAN_READABLE_ARCH" = "arm64" ]; then
+              HUMAN_READABLE_ARCH="arm-64bit"
+            elif [ "$HUMAN_READABLE_ARCH" = "amd64" ]; then
+              HUMAN_READABLE_ARCH="64bit"
+            fi
+          fi
+
+          BINARY_NAME=spotify-fixer-${HUMAN_READABLE_OS}-${HUMAN_READABLE_ARCH}
+          
+          if [ "${{ matrix.goos }}" = "windows" ]; then
+            BINARY_NAME=${BINARY_NAME}.exe
+          fi
+          
+          go build -o build_output/$BINARY_NAME ./src
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: bin-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: build_output/*
+          retention-days: 1 # We only need these temporarily until the Release job grabs them
+
+  # ---------------------------------------------------
+  # JOB 3: Create Release (gathers binaries and publishes)
+  # ---------------------------------------------------
+  release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v6
+
+      - name: Download all built binaries
+        uses: actions/download-artifact@v6
+        with:
+          path: final_binaries
+          pattern: bin-*
+          merge-multiple: true # flattens the folders so all files are in one directory
+
+      - name: Publish Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: final_binaries/*
+          generate_release_notes: true # Auto-generates notes based on merged PRs.
+          draft: true
