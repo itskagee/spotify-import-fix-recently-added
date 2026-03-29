@@ -1,0 +1,18 @@
+services:
+  spotify-import-fix-recently-added:
+    build:
+      context: ..
+      dockerfile: ./docker/Dockerfile
+    ports:
+      # Maps the Spotify callback port to host.
+      # Change the port numbers if you have a conflict.
+      # Make sure to change it in the Spotify developer dashboard as well, under Redirect URIs.
+      # Also enter the same port when prompted by the script on first run.
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - ../run:/app/run
+    environment:
+      # Replace with your actual timezone.
+      # MAKE SURE TO REPLACE THIS FOR ACCURATE LOGS!
+      # Use "TZ Identifier" from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+      - TZ=America/New_York
