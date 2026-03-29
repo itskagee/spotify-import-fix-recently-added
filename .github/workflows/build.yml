@@ -7,6 +7,11 @@ on:
   pull_request:
     branches: [ "main" ]
 
+# Prevent multiple runs for the same branch, but don't cancel main
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 jobs:
   # ---------------------------------------------------
   # JOB 1: Run Unit Tests (Runs on EVERY push and PR)
