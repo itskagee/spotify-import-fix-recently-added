@@ -32,7 +32,6 @@ jobs:
   build:
     name: Build Binaries
     needs: test
-    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     
     strategy:
