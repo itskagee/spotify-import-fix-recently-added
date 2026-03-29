@@ -81,10 +81,12 @@ jobs:
           
           go build -o build_output/$BINARY_NAME ./src
 
+          echo "ARTIFACT_NAME=bin-${HUMAN_READABLE_OS}-${HUMAN_READABLE_ARCH}" >> $GITHUB_ENV
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v6
         with:
-          name: bin-${{ matrix.goos }}-${{ matrix.goarch }}
+          name: ${{ env.ARTIFACT_NAME }}
           path: build_output/*
           retention-days: 1 # We only need these temporarily until the Release job grabs them
 
