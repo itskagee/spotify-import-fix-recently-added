@@ -32,7 +32,7 @@ jobs:
         run: go test -v ./...
 
   # ---------------------------------------------------
-  # JOB 2: Build Binaries (ONLY runs on Tag pushes)
+  # JOB 2: Build Binaries (Runs on EVERY push and PR)
   # ---------------------------------------------------
   build:
     name: Build Binaries
@@ -96,7 +96,7 @@ jobs:
           retention-days: 1 # We only need these temporarily until the Release job grabs them
 
   # ---------------------------------------------------
-  # JOB 3: Create Release (gathers binaries and publishes)
+  # JOB 3: Create Release (gathers binaries and publishes, ONLY runs on Tag pushes)
   # ---------------------------------------------------
   release:
     name: Create GitHub Release
