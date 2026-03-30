@@ -14,7 +14,8 @@ import (
 func fetchPlaylists(ctx context.Context, client *spotify.Client) ([]spotify.SimplePlaylist, error) {
 	var playlists []spotify.SimplePlaylist
 
-	playlistPage, err := client.CurrentUsersPlaylists(ctx)
+	const limit = 50 // Spotify API limit per request
+	playlistPage, err := client.CurrentUsersPlaylists(ctx, spotify.Limit(limit))
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +61,7 @@ func processPlaylist(ctx context.Context, client *spotify.Client, p spotify.Simp
 
 	// 2. Fetching Tracks
 	if state.Phase == "fetching" {
-		limit := 50
+		const limit = 50 // Spotify API limit per request
 		for {
 			opts := []spotify.RequestOption{spotify.Limit(limit), spotify.Offset(state.FetchOffset)}
 			trackPage, err := client.GetPlaylistItems(ctx, p.ID, opts...)
