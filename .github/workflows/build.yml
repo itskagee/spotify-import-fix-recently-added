@@ -119,7 +119,7 @@ jobs:
           merge-multiple: true # flattens the folders so all files are in one directory
 
       - name: Publish Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: final_binaries/*
           generate_release_notes: true # Auto-generates notes based on merged PRs.
